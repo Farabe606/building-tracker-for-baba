@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>নির্মাণ কাজের হিসাব — ৫ তলা ভবন</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --card: #1e2333;
+    --border: #2a3045;
+    --accent: #e8a84c;
+    --accent2: #5b8dee;
+    --green: #4caf82;
+    --red: #e05c5c;
+    --text: #e8eaf0;
+    --muted: #7a8299;
+    --tag-bg: #2a3045;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hind Siliguri', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #1a2040 0%, #0f1117 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .header-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), #c97d20);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-size: 17px; font-weight: 600; color: var(--text); }
+  .logo-sub { font-size: 12px; color: var(--muted); }
+  .header-stats { display: flex; gap: 24px; }
+  .hstat { text-align: right; }
+  .hstat-val { font-size: 20px; font-weight: 700; color: var(--accent); line-height: 1.1; }
+  .hstat-lbl { font-size: 11px; color: var(--muted); }
+
+  /* ── MAIN ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+
+  /* ── SUMMARY CARDS ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .scard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    position: relative; overflow: hidden;
+  }
+  .scard::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+  .scard.gold::before { background: linear-gradient(90deg, var(--accent), #c97d20); }
+  .scard.blue::before { background: linear-gradient(90deg, var(--accent2), #3a6cd4); }
+  .scard.green::before { background: linear-gradient(90deg, var(--green), #2e7d5a); }
+  .scard.red::before  { background: linear-gradient(90deg, var(--red), #b03030); }
+  .scard-icon { font-size: 22px; margin-bottom: 8px; }
+  .scard-val { font-size: 24px; font-weight: 700; line-height: 1; }
+  .scard.gold .scard-val { color: var(--accent); }
+  .scard.blue .scard-val { color: var(--accent2); }
+  .scard.green .scard-val { color: var(--green); }
+  .scard.red  .scard-val  { color: var(--red); }
+  .scard-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── PANEL ── */
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.02);
+  }
+  .panel-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .panel-body { padding: 20px; }
+
+  /* ── FORM ── */
+  .form-row { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 12px; align-items: start; }
+  @media(max-width:700px) { .form-row { grid-template-columns: 1fr; } }
+
+  label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 5px; }
+  input, textarea, select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Hind Siliguri', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent2); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 20px; border-radius: 8px; border: none;
+    font-family: 'Hind Siliguri', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-primary { background: var(--accent); color: #111; }
+  .btn-primary:hover { background: #d49840; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--border); color: var(--text); }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); padding: 6px 10px; font-size: 12px; }
+  .btn-danger:hover { background: var(--red); color: #fff; }
+  .btn-edit { background: transparent; color: var(--accent2); border: 1px solid var(--accent2); padding: 6px 10px; font-size: 12px; }
+  .btn-edit:hover { background: var(--accent2); color: #fff; }
+
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+
+  /* ── ENTRIES TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    background: var(--surface);
+    color: var(--muted); font-weight: 600; font-size: 12px;
+    text-align: left; padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  tbody tr:hover { background: rgba(255,255,255,.02); }
+  tbody tr.editing { background: rgba(91,141,238,.05); border-color: var(--accent2); }
+  td { padding: 12px 14px; vertical-align: top; }
+  td.date-col { white-space: nowrap; color: var(--accent); font-weight: 600; font-size: 13px; }
+  td.work-col { color: var(--text); line-height: 1.6; max-width: 420px; }
+  td.cost-col { white-space: nowrap; font-weight: 700; color: var(--green); font-size: 15px; }
+  td.action-col { white-space: nowrap; }
+  .day-tag {
+    display: inline-block;
+    background: var(--tag-bg); color: var(--muted);
+    font-size: 11px; padding: 2px 8px; border-radius: 20px;
+    margin-top: 4px;
+  }
+
+  .total-row td {
+    background: linear-gradient(90deg, rgba(232,168,76,.08), transparent);
+    border-top: 2px solid var(--accent);
+    font-weight: 700; font-size: 15px;
+    color: var(--accent);
+  }
+
+  /* ── EDIT INLINE ── */
+  .edit-form { display: none; }
+  .edit-form.active { display: block; }
+  .entry-view { }
+
+  /* ── EMPTY ── */
+  .empty {
+    text-align: center; padding: 48px 24px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; }
+
+  /* ── MONTH BADGE ── */
+  .month-header td {
+    background: rgba(91,141,238,.07);
+    color: var(--accent2); font-weight: 700; font-size: 12px;
+    padding: 6px 14px;
+    border: none;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #fff;
+    padding: 10px 22px; border-radius: 30px;
+    font-size: 14px; font-weight: 600;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+    z-index: 999;
+  }
+  #toast.show { opacity: 1; }
+
+  /* ── PRINT ── */
+  @media print {
+    header, .panel:first-of-type, .form-actions, .action-col, .btn { display: none !important; }
+    body { background: #fff; color: #000; }
+    .scard { border: 1px solid #ccc; background: #f9f9f9; }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* animations */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .entry-row { animation: slideIn .25s ease; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🏗️</div>
+      <div>
+        <div class="logo-text">নির্মাণ কাজের হিসাব</div>
+        <div class="logo-sub">৫ তলা ভবন নির্মাণ প্রকল্প</div>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="hstat">
+        <div class="hstat-val" id="h-total">৳০</div>
+        <div class="hstat-lbl">মোট খরচ</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val" id="h-days" style="color:var(--accent2)">০</div>
+        <div class="hstat-lbl">কার্যদিন</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid">
+    <div class="scard gold">
+      <div class="scard-icon">💰</div>
+      <div class="scard-val" id="s-total">৳ ০</div>
+      <div class="scard-lbl">মোট ব্যয়</div>
+    </div>
+    <div class="scard blue">
+      <div class="scard-icon">📅</div>
+      <div class="scard-val" id="s-days">০ দিন</div>
+      <div class="scard-lbl">মোট কার্যদিন</div>
+    </div>
+    <div class="scard green">
+      <div class="scard-icon">📊</div>
+      <div class="scard-val" id="s-avg">৳ ০</div>
+      <div class="scard-lbl">গড় দৈনিক খরচ</div>
+    </div>
+    <div class="scard red">
+      <div class="scard-icon">🔝</div>
+      <div class="scard-val" id="s-max">৳ ০</div>
+      <div class="scard-lbl">সর্বোচ্চ এক দিনের খরচ</div>
+    </div>
+  </div>
+
+  <!-- ADD ENTRY FORM -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">➕ নতুন দিনের হিসাব যোগ করুন</div>
+    </div>
+    <div class="panel-body">
+      <div class="form-row">
+        <div>
+          <label>তারিখ</label>
+          <input type="date" id="f-date">
+        </div>
+        <div>
+          <label>আজকের কাজের বিবরণ</label>
+          <textarea id="f-work" placeholder="যেমন: ৩য় তলার ছাদ ঢালাই, রড বাঁধার কাজ, ইট গাঁথুনি..."></textarea>
+        </div>
+        <div>
+          <label>মোট খরচ (টাকা)</label>
+          <input type="number" id="f-cost" placeholder="০" min="0">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="clearForm()">পরিষ্কার</button>
+        <button class="btn btn-primary" onclick="addEntry()">💾 সংরক্ষণ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTRIES TABLE -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">📋 দৈনিক কাজের তালিকা</div>
+      <button class="btn btn-ghost" onclick="window.print()" style="font-size:13px;padding:6px 14px;">🖨️ প্রিন্ট</button>
+    </div>
+    <div class="panel-body" style="padding:0;">
+      <div class="table-wrap">
+        <table id="entries-table">
+          <thead>
+            <tr>
+              <th style="width:120px">তারিখ</th>
+              <th>কাজের বিবরণ</th>
+              <th style="width:130px">মোট খরচ</th>
+              <th style="width:110px">পরিবর্তন</th>
+            </tr>
+          </thead>
+          <tbody id="entries-body">
+            <tr id="empty-row">
+              <td colspan="4">
+                <div class="empty">
+                  <div class="empty-icon">📝</div>
+                  <div class="empty-text">এখনো কোনো হিসাব নেই।<br>উপরের ফর্ম থেকে প্রথম দিনের হিসাব যোগ করুন।</div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast">✅ সফলভাবে সংরক্ষিত হয়েছে!</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+const STORAGE_KEY = 'building_tracker_entries_v1';
+let entries = [];
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    entries = raw ? JSON.parse(raw) : [];
+  } catch { entries = []; }
+}
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+// ── DATE HELPERS ─────────────────────────────────────
+function todayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+function formatBD(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  const months = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন',
+                  'জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+  return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+}
+function monthLabel(iso) {
+  const [y, m] = iso.split('-');
+  const months = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন',
+                  'জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+  return `${months[parseInt(m)-1]} ${y}`;
+}
+function dayName(iso) {
+  const days = ['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+  return days[new Date(iso).getDay()];
+}
+function toBengaliNum(n) {
+  return String(n).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+}
+function formatTaka(n) {
+  const x = Math.round(Number(n) || 0);
+  return '৳\u00a0' + toBengaliNum(x.toLocaleString('en-IN'));
+}
+
+// ── FORM ─────────────────────────────────────────────
+document.getElementById('f-date').value = todayISO();
+
+function clearForm() {
+  document.getElementById('f-date').value = todayISO();
+  document.getElementById('f-work').value = '';
+  document.getElementById('f-cost').value = '';
+}
+
+function addEntry() {
+  const date = document.getElementById('f-date').value;
+  const work = document.getElementById('f-work').value.trim();
+  const cost = parseFloat(document.getElementById('f-cost').value) || 0;
+  if (!date) { alert('তারিখ দিন।'); return; }
+  if (!work)  { alert('কাজের বিবরণ লিখুন।'); return; }
+  entries.push({ id: Date.now(), date, work, cost });
+  entries.sort((a,b) => b.date.localeCompare(a.date));
+  save(); render(); clearForm(); showToast('সফলভাবে সংরক্ষিত হয়েছে!');
+}
+
+function deleteEntry(id) {
+  if (!confirm('এই হিসাব মুছে ফেলবেন?')) return;
+  entries = entries.filter(e => e.id !== id);
+  save(); render();
+}
+
+function startEdit(id) {
+  const row = document.getElementById('row-' + id);
+  const entry = entries.find(e => e.id === id);
+  row.classList.add('editing');
+  row.querySelector('.entry-view').style.display = 'none';
+  const ef = row.querySelector('.edit-form');
+  ef.classList.add('active');
+  ef.querySelector('.ed-date').value = entry.date;
+  ef.querySelector('.ed-work').value = entry.work;
+  ef.querySelector('.ed-cost').value = entry.cost;
+}
+
+function cancelEdit(id) {
+  const row = document.getElementById('row-' + id);
+  row.classList.remove('editing');
+  row.querySelector('.entry-view').style.display = '';
+  row.querySelector('.edit-form').classList.remove('active');
+}
+
+function saveEdit(id) {
+  const row = document.getElementById('row-' + id);
+  const ef  = row.querySelector('.edit-form');
+  const date = ef.querySelector('.ed-date').value;
+  const work = ef.querySelector('.ed-work').value.trim();
+  const cost = parseFloat(ef.querySelector('.ed-cost').value) || 0;
+  if (!date || !work) { alert('তারিখ ও বিবরণ পূরণ করুন।'); return; }
+  const idx = entries.findIndex(e => e.id === id);
+  entries[idx] = { id, date, work, cost };
+  entries.sort((a,b) => b.date.localeCompare(a.date));
+  save(); render(); showToast('পরিবর্তন সংরক্ষিত হয়েছে!');
+}
+
+// ── RENDER ───────────────────────────────────────────
+function render() {
+  const tbody = document.getElementById('entries-body');
+  tbody.innerHTML = '';
+
+  if (entries.length === 0) {
+    tbody.innerHTML = `<tr id="empty-row"><td colspan="4">
+      <div class="empty">
+        <div class="empty-icon">📝</div>
+        <div class="empty-text">এখনো কোনো হিসাব নেই।<br>উপরের ফর্ম থেকে প্রথম দিনের হিসাব যোগ করুন।</div>
+      </div></td></tr>`;
+    updateStats(0, 0, 0, 0);
+    return;
+  }
+
+  let total = 0, maxCost = 0;
+  let prevMonth = '';
+
+  entries.forEach(e => {
+    total += e.cost;
+    if (e.cost > maxCost) maxCost = e.cost;
+
+    const curMonth = e.date.slice(0, 7);
+    if (curMonth !== prevMonth) {
+      const mrow = document.createElement('tr');
+      mrow.className = 'month-header';
+      mrow.innerHTML = `<td colspan="4">📅 ${monthLabel(e.date)}</td>`;
+      tbody.appendChild(mrow);
+      prevMonth = curMonth;
+    }
+
+    const tr = document.createElement('tr');
+    tr.id = 'row-' + e.id;
+    tr.className = 'entry-row';
+    tr.innerHTML = `
+      <td class="date-col">
+        <div class="entry-view">
+          <div>${formatBD(e.date)}</div>
+          <span class="day-tag">${dayName(e.date)}</span>
+        </div>
+        <div class="edit-form">
+          <input type="date" class="ed-date" value="${e.date}" style="font-size:13px;padding:7px 9px;">
+        </div>
+      </td>
+      <td class="work-col">
+        <div class="entry-view">${escHtml(e.work).replace(/\n/g,'<br>')}</div>
+        <div class="edit-form">
+          <textarea class="ed-work" style="min-height:70px;font-size:13px;">${escHtml(e.work)}</textarea>
+        </div>
+      </td>
+      <td class="cost-col">
+        <div class="entry-view">${formatTaka(e.cost)}</div>
+        <div class="edit-form">
+          <input type="number" class="ed-cost" value="${e.cost}" min="0" style="font-size:13px;padding:7px 9px;">
+        </div>
+      </td>
+      <td class="action-col">
+        <div class="entry-view" style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-edit" onclick="startEdit(${e.id})">✏️ সম্পাদনা</button>
+          <button class="btn btn-danger" onclick="deleteEntry(${e.id})">🗑️</button>
+        </div>
+        <div class="edit-form" style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-primary" style="padding:6px 12px;font-size:12px;" onclick="saveEdit(${e.id})">💾 সেভ</button>
+          <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;" onclick="cancelEdit(${e.id})">বাতিল</button>
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  // TOTAL ROW
+  const totalRow = document.createElement('tr');
+  totalRow.className = 'total-row';
+  totalRow.innerHTML = `
+    <td colspan="2" style="text-align:right;font-size:15px;color:var(--accent);">
+      মোট ${toBengaliNum(entries.length)} দিনের মোট খরচ →
+    </td>
+    <td class="cost-col" style="color:var(--accent);font-size:18px;">${formatTaka(total)}</td>
+    <td></td>`;
+  tbody.appendChild(totalRow);
+
+  const avg = entries.length ? total / entries.length : 0;
+  updateStats(total, entries.length, avg, maxCost);
+}
+
+function updateStats(total, days, avg, max) {
+  document.getElementById('s-total').textContent = formatTaka(total);
+  document.getElementById('s-days').textContent  = toBengaliNum(days) + ' দিন';
+  document.getElementById('s-avg').textContent   = formatTaka(avg);
+  document.getElementById('s-max').textContent   = formatTaka(max);
+  document.getElementById('h-total').textContent = formatTaka(total);
+  document.getElementById('h-days').textContent  = toBengaliNum(days);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── TOAST ────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✅ ' + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ─────────────────────────────────────────────
+load();
+render();
+</script>
+</body>
+</html>
